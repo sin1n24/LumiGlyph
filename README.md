@@ -10,6 +10,25 @@ A two-device system that traces glyph strokes using a WS2812B LED mounted at the
 
 ---
 
+## Bill of Materials
+
+### Drawing device
+| Part | Notes |
+|------|-------|
+| M5Stack AtomS3R-CAM | Main controller + camera |
+| Micro servo × 2 | Connected to G25, G26 |
+| WS2812B LED × 1 | Connected to G0 (pen LED) |
+| **4-servo connection board** (self-made) | Servo power routing board — [Switch Science](https://ssci.to/11122) |
+| 5-bar linkage frame | Custom fabricated, all links 60 mm |
+
+### Display device
+| Part | Notes |
+|------|-------|
+| M5Stack AtomS3R | Main controller + display |
+| **Mini controller** (self-made) | Joystick + 3-button handheld controller — [Switch Science](https://ssci.to/9520) |
+
+---
+
 ## System Overview
 
 | Role | Device | Function |

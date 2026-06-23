@@ -1,16 +1,16 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LumiGlyph 窶・LED Light Drawing Machine</title>
-  <meta name="description" content="5-bar linkage LED light-drawing machine. DigiKey Make ONE 2026 entry by sin1's studio.">
+  <title>LumiGlyph — LED光描画マシン</title>
+  <meta name="description" content="5節リンク機構搭載LEDライトペインティングマシン。DigiKey Make ONE 2026 出展作品 by sin1's studio">
   <meta property="og:title" content="LumiGlyph">
-  <meta property="og:description" content="5-bar linkage ﾃ・WS2812B 窶・light painting with precision mechanics">
+  <meta property="og:description" content="5節リンク × WS2812B — 精密機構で描く光の軌跡">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,300;1,300;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,300;1,300;1,400&family=Noto+Sans+JP:wght@300;400;500&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
 
   <style>
     :root {
@@ -32,13 +32,13 @@
     body {
       background: var(--bg);
       color: var(--text);
-      font-family: 'DM Sans', sans-serif;
+      font-family: 'Noto Sans JP', sans-serif;
       font-size: 16px;
       overflow-x: hidden;
       -webkit-font-smoothing: antialiased;
     }
 
-    /* 笏笏 NAV 笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏 */
+    /* ── NAV ─────────────────────────────────────── */
     nav {
       position: fixed; top: 0; left: 0; right: 0; z-index: 200;
       display: flex; align-items: center; justify-content: space-between;
@@ -60,17 +60,16 @@
     }
     .nav-links { display: flex; gap: 2.2rem; list-style: none; }
     .nav-links a {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: .68rem;
-      letter-spacing: .14em;
-      text-transform: uppercase;
+      font-family: 'Noto Sans JP', sans-serif;
+      font-size: .72rem;
+      letter-spacing: .05em;
       color: var(--dim);
       text-decoration: none;
       transition: color .2s;
     }
     .nav-links a:hover { color: var(--cyan); }
 
-    /* 笏笏 HERO 笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏 */
+    /* ── HERO ────────────────────────────────────── */
     #hero {
       position: relative;
       height: 100vh; min-height: 600px;
@@ -81,7 +80,6 @@
       position: absolute; inset: 0;
       width: 100%; height: 100%;
     }
-    /* vignette overlay */
     #hero::after {
       content: '';
       position: absolute; inset: 0;
@@ -107,10 +105,10 @@
     }
     h1 {
       font-family: 'Cinzel', serif;
-      font-size: clamp(4.5rem, 13vw, 10rem);
+      font-size: clamp(3.5rem, 11vw, 9rem);
       font-weight: 700;
-      letter-spacing: .08em;
-      line-height: .88;
+      letter-spacing: .1em;
+      line-height: 1;
       text-transform: uppercase;
       background: linear-gradient(145deg, #fff 25%, var(--cyan) 60%, #fff 85%);
       -webkit-background-clip: text;
@@ -120,12 +118,11 @@
       animation: fadeUp 1s .5s forwards;
     }
     .hero-tagline {
-      font-family: 'Cormorant Garamond', serif;
-      font-style: italic;
+      font-family: 'Noto Sans JP', sans-serif;
       font-weight: 300;
-      font-size: clamp(1rem, 2.4vw, 1.45rem);
+      font-size: clamp(.95rem, 2.2vw, 1.3rem);
       color: var(--dim);
-      letter-spacing: .06em;
+      letter-spacing: .04em;
       opacity: 0;
       animation: fadeUp .8s .9s forwards;
     }
@@ -137,8 +134,8 @@
     }
     .btn {
       display: inline-flex; align-items: center; gap: .5em;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: .72rem; letter-spacing: .14em; text-transform: uppercase;
+      font-family: 'Noto Sans JP', sans-serif;
+      font-size: .78rem; letter-spacing: .06em;
       text-decoration: none;
       padding: .78em 2em;
       border: 1px solid;
@@ -160,8 +157,8 @@
       opacity: 0; animation: fadeIn 1s 2s forwards;
     }
     .scroll-hint span {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: .6rem; letter-spacing: .22em; color: var(--dim);
+      font-family: 'Noto Sans JP', sans-serif;
+      font-size: .65rem; letter-spacing: .16em; color: var(--dim);
     }
     .scroll-line {
       width: 1px; height: 44px;
@@ -169,7 +166,7 @@
       animation: lineFlash 2.2s 2s ease-in-out infinite;
     }
 
-    /* 笏笏 SECTION COMMON 笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏 */
+    /* ── SECTION COMMON ──────────────────────────── */
     section { padding: 7rem 3rem; }
     .inner { max-width: 1200px; margin: 0 auto; }
     .sec-label {
@@ -178,17 +175,18 @@
       color: var(--cyan); margin-bottom: .9rem;
     }
     h2 {
-      font-family: 'Cinzel', serif;
-      font-size: clamp(1.9rem, 4vw, 3.2rem);
-      font-weight: 400; letter-spacing: .04em; line-height: 1.15;
+      font-family: 'Noto Sans JP', sans-serif;
+      font-weight: 300;
+      font-size: clamp(1.7rem, 3.5vw, 2.8rem);
+      letter-spacing: .04em; line-height: 1.4;
       margin-bottom: 1.6rem;
     }
     .body-text {
-      color: var(--dim); line-height: 1.85; font-size: .98rem; max-width: 54ch;
+      color: var(--dim); line-height: 1.95; font-size: .96rem; max-width: 52ch;
     }
     .body-text + .body-text { margin-top: 1rem; }
 
-    /* 笏笏 CONCEPT 笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏 */
+    /* ── CONCEPT ─────────────────────────────────── */
     #concept { border-top: 1px solid var(--border); }
     .concept-layout {
       display: grid; grid-template-columns: 1fr 1fr;
@@ -207,7 +205,7 @@
     }
     #svg-linkage { width: 100%; max-width: 380px; overflow: visible; }
 
-    /* 笏笏 SYSTEM 笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏 */
+    /* ── SYSTEM ──────────────────────────────────── */
     #system { border-top: 1px solid var(--border); padding-top: 0; }
     .device-grid {
       display: grid; grid-template-columns: 1fr 1fr;
@@ -231,7 +229,7 @@
     .card-disp .dev-role { color: var(--magenta); }
     .dev-name {
       font-family: 'Cinzel', serif;
-      font-size: 1.35rem; letter-spacing: .05em; margin-bottom: 2rem;
+      font-size: 1.2rem; letter-spacing: .05em; margin-bottom: 2rem;
     }
     .spec-list { list-style: none; display: flex; flex-direction: column; gap: 0; }
     .spec-item {
@@ -243,24 +241,24 @@
     .spec-key {
       font-family: 'JetBrains Mono', monospace;
       font-size: .66rem; color: var(--dim);
-      min-width: 5.5rem; padding-top: .15em; letter-spacing: .04em;
+      min-width: 5rem; padding-top: .15em; letter-spacing: .04em;
     }
     .esp-bridge {
       grid-column: 1/-1;
       background: var(--bg); border: 1px solid var(--border);
       padding: 1.4rem 2rem;
       display: flex; align-items: center; justify-content: center; gap: 1.8rem;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: .72rem; letter-spacing: .1em; color: var(--dim);
+      font-family: 'Noto Sans JP', sans-serif;
+      font-size: .76rem; letter-spacing: .04em; color: var(--dim);
     }
     .esp-wire {
       flex: 1; height: 1px;
       background: repeating-linear-gradient(90deg,
         var(--amber) 0, var(--amber) 5px, transparent 5px, transparent 10px);
     }
-    .esp-label { color: var(--amber); }
+    .esp-label { color: var(--amber); font-family: 'JetBrains Mono', monospace; font-size: .72rem; }
 
-    /* 笏笏 GLYPHS 笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏 */
+    /* ── GLYPHS ──────────────────────────────────── */
     #glyphs { border-top: 1px solid var(--border); }
     .glyph-grid {
       display: grid;
@@ -286,26 +284,27 @@
     .gcell:hover path { transition: stroke-dashoffset 1s ease; stroke-dashoffset: 0; }
     .gcell path.d2 { transition-delay: .3s; }
     .gcell path.d3 { transition-delay: .6s; }
-    .g-cyan path { stroke: var(--cyan); filter: drop-shadow(0 0 5px rgba(0,232,255,.6)); }
-    .g-orange path { stroke: var(--orange); filter: drop-shadow(0 0 5px rgba(255,123,0,.6)); }
-    .g-mag path { stroke: var(--magenta); filter: drop-shadow(0 0 5px rgba(255,0,170,.6)); }
-    .g-amber path { stroke: var(--amber); filter: drop-shadow(0 0 5px rgba(255,184,0,.6)); }
+    .g-cyan   path { stroke: var(--cyan);    filter: drop-shadow(0 0 5px rgba(0,232,255,.6)); }
+    .g-orange path { stroke: var(--orange);  filter: drop-shadow(0 0 5px rgba(255,123,0,.6)); }
+    .g-mag    path { stroke: var(--magenta); filter: drop-shadow(0 0 5px rgba(255,0,170,.6)); }
+    .g-amber  path { stroke: var(--amber);   filter: drop-shadow(0 0 5px rgba(255,184,0,.6)); }
     .glabel {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: .62rem; letter-spacing: .1em; color: var(--dim);
+      font-family: 'Noto Sans JP', sans-serif;
+      font-size: .68rem; letter-spacing: .05em; color: var(--dim);
     }
     .gcell-wide { grid-column: span 2; aspect-ratio: 2; }
     .gcell-wide svg { width: 70%; height: 55%; }
 
-    /* 笏笏 BOM 笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏 */
+    /* ── BOM ─────────────────────────────────────── */
     #bom { border-top: 1px solid var(--border); }
     .bom-cols {
       display: grid; grid-template-columns: 1fr 1fr;
       gap: 4rem; margin-top: 3rem;
     }
     .bom-group-title {
-      font-family: 'Cinzel', serif;
-      font-size: .88rem; letter-spacing: .15em; text-transform: uppercase;
+      font-family: 'Noto Sans JP', sans-serif;
+      font-weight: 500;
+      font-size: .88rem; letter-spacing: .08em;
       padding-bottom: .75rem; margin-bottom: .5rem;
       border-bottom: 1px solid var(--border);
     }
@@ -328,7 +327,7 @@
     }
     .bom-link:hover { border-color: var(--orange); }
 
-    /* 笏笏 FOOTER 笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏 */
+    /* ── FOOTER ──────────────────────────────────── */
     footer {
       border-top: 1px solid var(--border);
       padding: 5rem 3rem 3rem;
@@ -342,11 +341,11 @@
       font-family: 'Cinzel', serif;
       font-size: 1.2rem; letter-spacing: .3em; margin-bottom: .8rem;
     }
-    .footer-desc { font-size: .88rem; color: var(--dim); max-width: 28ch; line-height: 1.7; }
+    .footer-desc { font-size: .88rem; color: var(--dim); max-width: 28ch; line-height: 1.8; }
     .footer-links { display: flex; flex-direction: column; gap: .7rem; align-items: flex-end; }
     .footer-links a {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: .68rem; letter-spacing: .1em;
+      font-family: 'Noto Sans JP', sans-serif;
+      font-size: .74rem; letter-spacing: .04em;
       color: var(--dim); text-decoration: none; transition: color .2s;
     }
     .footer-links a:hover { color: var(--text); }
@@ -358,7 +357,7 @@
       font-size: .62rem; letter-spacing: .1em; color: var(--dim);
     }
 
-    /* 笏笏 REVEAL (IntersectionObserver) 笏笏笏笏笏笏笏笏笏笏笏笏 */
+    /* ── REVEAL ──────────────────────────────────── */
     .reveal {
       opacity: 0; transform: translateY(26px);
       transition: opacity .75s ease, transform .75s ease;
@@ -367,7 +366,7 @@
     .reveal.delay1 { transition-delay: .12s; }
     .reveal.delay2 { transition-delay: .24s; }
 
-    /* 笏笏 KEYFRAMES 笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏 */
+    /* ── KEYFRAMES ───────────────────────────────── */
     @keyframes fadeUp {
       from { opacity: 0; transform: translateY(18px); }
       to   { opacity: 1; transform: translateY(0); }
@@ -378,7 +377,7 @@
       50%      { opacity: .2; transform: scaleY(.55); }
     }
 
-    /* 笏笏 RESPONSIVE 笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏 */
+    /* ── RESPONSIVE ──────────────────────────────── */
     @media (max-width: 820px) {
       nav { padding: 1.1rem 1.4rem; }
       .nav-links { display: none; }
@@ -391,79 +390,72 @@
       .footer-copy { flex-direction: column; gap: .5rem; }
       .glyph-grid { grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); }
       .gcell-wide { grid-column: span 2; }
-      h1 { font-size: clamp(3.5rem, 16vw, 6rem); }
+      h1 { font-size: clamp(3rem, 14vw, 5rem); }
     }
   </style>
 </head>
 <body>
 
-<!-- 笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊・NAV 笊絶武笊絶武笊・-->
+<!-- NAV -->
 <nav id="nav">
   <a href="#" class="nav-logo">LumiGlyph</a>
   <ul class="nav-links">
-    <li><a href="#concept">Concept</a></li>
-    <li><a href="#system">System</a></li>
-    <li><a href="#glyphs">Glyphs</a></li>
-    <li><a href="#bom">Hardware</a></li>
-    <li><a href="https://protopedia.net/prototype/8594" target="_blank">ProtoPedia 竊・/a></li>
+    <li><a href="#concept">コンセプト</a></li>
+    <li><a href="#system">システム</a></li>
+    <li><a href="#glyphs">グリフ</a></li>
+    <li><a href="#bom">ハードウェア</a></li>
+    <li><a href="https://protopedia.net/prototype/8594" target="_blank">ProtoPedia ↗</a></li>
   </ul>
 </nav>
 
-<!-- 笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊・HERO 笊絶武笊絶武 -->
+<!-- HERO -->
 <section id="hero">
   <canvas id="hero-canvas"></canvas>
   <div class="hero-inner">
     <div class="hero-badge">DigiKey Make ONE 2026</div>
-    <h1>Lumi<br>Graph</h1>
-    <p class="hero-tagline">5-bar linkage ﾃ・WS2812B 窶・light painting with precision mechanics</p>
+    <h1>LumiGlyph</h1>
+    <p class="hero-tagline">5節リンク機構 × WS2812B ── 精密メカニズムで描く光の軌跡</p>
     <div class="hero-ctas">
-      <a href="https://protopedia.net/prototype/8594" class="btn btn-primary" target="_blank">ProtoPedia</a>
+      <a href="https://protopedia.net/prototype/8594" class="btn btn-primary" target="_blank">ProtoPedia で見る</a>
       <a href="https://github.com/sin1n24/LumiGlyphProtoPedia" class="btn btn-ghost" target="_blank">GitHub</a>
       <a href="https://sin1.studio/" class="btn btn-ghost" target="_blank">sin1's studio</a>
     </div>
   </div>
   <div class="scroll-hint">
-    <span>Scroll</span>
+    <span>スクロール</span>
     <div class="scroll-line"></div>
   </div>
 </section>
 
-<!-- 笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊・CONCEPT 笊絶武 -->
+<!-- CONCEPT -->
 <section id="concept">
   <div class="inner concept-layout">
     <div class="reveal">
-      <p class="sec-label">01 / Concept</p>
-      <h2>Light meets<br>Mechanism</h2>
-      <p class="body-text">A WS2812B LED rides the coupler point of a symmetric 5-bar planar linkage. As two micro servos sweep their angles, inverse kinematics guides the LED through precise glyph strokes.</p>
-      <p class="body-text">The Display device accumulates a per-pixel maximum-brightness composite over ESP-NOW camera frames 窶・producing luminous calligraphy from long-exposure light painting.</p>
+      <p class="sec-label">01 / コンセプト</p>
+      <h2>光と機構の<br>交差点</h2>
+      <p class="body-text">5節平面リンク機構のクーラー点にWS2812B LEDを搭載。2つのマイクロサーボが角度を変えることで、逆運動学がLEDをグリフの筆跡に沿って正確に誘導します。</p>
+      <p class="body-text">表示機（Display）はESP-NOWで受信したカメラフレームを画素ごとの最大輝度合成で積算し、長時間露光による発光書道の映像を生成します。</p>
       <p class="body-text" style="margin-top:1.5rem;font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--dim);letter-spacing:.04em;">
-        L1 = L2 = L3 = L4 = 60 mm &nbsp;ﾂｷ&nbsp; D = 36 mm<br>
-        workspace center 竕・(18, 75) mm
+        L1 = L2 = L3 = L4 = 60 mm &nbsp;·&nbsp; D = 36 mm<br>
+        ワークスペース中心 ≈ (18, 75) mm
       </p>
     </div>
     <div class="linkage-wrap reveal delay1">
       <div class="linkage-glow"></div>
-      <!-- Animated 5-bar linkage SVG -->
       <svg id="svg-linkage" viewBox="-90 -20 180 180" xmlns="http://www.w3.org/2000/svg">
-        <!-- Ground bar -->
         <line x1="-18" y1="120" x2="18" y2="120" stroke="#2A2A42" stroke-width="2"/>
         <circle cx="-18" cy="120" r="4" fill="#2A2A42"/>
         <circle cx="18"  cy="120" r="4" fill="#2A2A42"/>
-        <!-- Ground label -->
         <text x="0" y="140" text-anchor="middle" font-family="'JetBrains Mono',monospace"
-          font-size="7" fill="rgba(221,217,207,0.25)" letter-spacing="1">GROUND</text>
-        <!-- Light trail -->
+          font-size="7" fill="rgba(221,217,207,0.22)" letter-spacing="1">GROUND</text>
         <polyline id="lk-trail" fill="none" stroke="#00E8FF" stroke-width="1.2"
           stroke-linecap="round" stroke-linejoin="round" opacity=".5"/>
-        <!-- Arms -->
         <line id="lk-a1" stroke="#00E8FF" stroke-width="2" stroke-linecap="round" opacity=".65"/>
         <line id="lk-a2" stroke="#FF00AA" stroke-width="2" stroke-linecap="round" opacity=".65"/>
         <line id="lk-a3" stroke="#00E8FF" stroke-width="2" stroke-linecap="round" opacity=".4"/>
         <line id="lk-a4" stroke="#FF00AA" stroke-width="2" stroke-linecap="round" opacity=".4"/>
-        <!-- Joints -->
         <circle id="lk-j1" r="3.5" fill="#00E8FF" opacity=".7"/>
         <circle id="lk-j2" r="3.5" fill="#FF00AA" opacity=".7"/>
-        <!-- LED coupler glow -->
         <circle id="lk-glow" r="14" fill="#00E8FF" opacity=".12"/>
         <circle id="lk-led" r="4.5" fill="#00E8FF">
           <animate attributeName="r" values="4;6;4" dur=".9s" repeatCount="indefinite"/>
@@ -474,132 +466,132 @@
   </div>
 </section>
 
-<!-- 笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊・SYSTEM 笊絶武笊・-->
+<!-- SYSTEM -->
 <section id="system" style="padding-top:0">
   <div class="inner">
     <div class="reveal">
-      <p class="sec-label">02 / System</p>
-      <h2>Two devices,<br>one wireless link</h2>
+      <p class="sec-label">02 / システム</p>
+      <h2>2台のデバイス、<br>1本の無線リンク</h2>
     </div>
     <div class="device-grid reveal delay1">
       <!-- Drawing -->
       <div class="device-card card-draw">
-        <p class="dev-role">Drawing</p>
+        <p class="dev-role">Drawing（描画機）</p>
         <p class="dev-name">M5Stack AtomS3R-CAM</p>
         <ul class="spec-list">
           <li class="spec-item"><span class="spec-key">MCU</span><span>ESP32-S3</span></li>
-          <li class="spec-item"><span class="spec-key">Servos</span><span>2ﾃ・micro servo 窶・G25, G26</span></li>
-          <li class="spec-item"><span class="spec-key">LED</span><span>WS2812B ﾃ・1 窶・G0</span></li>
-          <li class="spec-item"><span class="spec-key">Linkage</span><span>L1=L2=L3=L4=60 mm, D=36 mm</span></li>
-          <li class="spec-item"><span class="spec-key">Role</span><span>IK, servo drive, LED, camera stream</span></li>
+          <li class="spec-item"><span class="spec-key">サーボ</span><span>マイクロサーボ × 2 — G25, G26</span></li>
+          <li class="spec-item"><span class="spec-key">LED</span><span>WS2812B × 1 — G0</span></li>
+          <li class="spec-item"><span class="spec-key">リンク</span><span>L1=L2=L3=L4=60mm, D=36mm</span></li>
+          <li class="spec-item"><span class="spec-key">役割</span><span>逆運動学計算・サーボ駆動・LED制御・カメラ送信</span></li>
         </ul>
       </div>
       <!-- Display -->
       <div class="device-card card-disp">
-        <p class="dev-role">Display</p>
+        <p class="dev-role">Display（表示機）</p>
         <p class="dev-name">M5Stack AtomS3R</p>
         <ul class="spec-list">
           <li class="spec-item"><span class="spec-key">MCU</span><span>ESP32-S3</span></li>
-          <li class="spec-item"><span class="spec-key">Input</span><span>Joystick (G8/G7) + 3 buttons</span></li>
-          <li class="spec-item"><span class="spec-key">Display</span><span>Built-in 128ﾃ・28 LCD</span></li>
-          <li class="spec-item"><span class="spec-key">Protocol</span><span>ESP-NOW</span></li>
-          <li class="spec-item"><span class="spec-key">Role</span><span>Long-exposure composite, menu, REC/PLAY</span></li>
+          <li class="spec-item"><span class="spec-key">入力</span><span>ジョイスティック (G8/G7) + ボタン3個</span></li>
+          <li class="spec-item"><span class="spec-key">画面</span><span>内蔵 128×128 LCD</span></li>
+          <li class="spec-item"><span class="spec-key">通信</span><span>ESP-NOW（無線）</span></li>
+          <li class="spec-item"><span class="spec-key">役割</span><span>長時間露光合成・メニューUI・REC/PLAY</span></li>
         </ul>
       </div>
       <div class="esp-bridge">
         <div class="esp-wire"></div>
         <span class="esp-label">ESP-NOW</span>
-        <span>camera frames + glyph packets</span>
+        <span>カメラフレーム + グリフパケット</span>
         <div class="esp-wire"></div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- 笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊・GLYPHS 笊絶武笊・-->
+<!-- GLYPHS -->
 <section id="glyphs">
   <div class="inner">
     <div class="reveal">
-      <p class="sec-label">03 / Glyphs</p>
-      <h2>Hover to draw</h2>
-      <p class="body-text">All strokes are authored as <code style="font-family:'JetBrains Mono',monospace;font-size:.85em;color:var(--cyan)">int8_t</code> coordinate streams in <code style="font-family:'JetBrains Mono',monospace;font-size:.85em;color:var(--cyan)">src/glyphs.h</code>. Scale: 0.5 mm/unit. Workspace: 28 ﾃ・34 mm.</p>
+      <p class="sec-label">03 / グリフ</p>
+      <h2>ホバーで描画</h2>
+      <p class="body-text">すべてのストロークは <code style="font-family:'JetBrains Mono',monospace;font-size:.85em;color:var(--cyan)">src/glyphs.h</code> に <code style="font-family:'JetBrains Mono',monospace;font-size:.85em;color:var(--cyan)">int8_t</code> 座標ストリームとして手書きで定義されています。スケール: 0.5mm/単位。ワークスペース: 28×34mm。</p>
     </div>
     <div class="glyph-grid reveal delay1">
 
-      <!-- 繧､ -->
+      <!-- イ -->
       <div class="gcell g-cyan">
         <svg viewBox="-50 -55 100 110">
           <path d="M 10,-24 L -16,-8"/>
           <path d="M 7,-12 L 7,17" class="d2"/>
         </svg>
-        <span class="glabel">繧､</span>
+        <span class="glabel">イ</span>
       </div>
 
-      <!-- 繝ｭ -->
+      <!-- ロ -->
       <div class="gcell g-cyan">
         <svg viewBox="-50 -55 100 110">
           <path d="M -12,-24 L 12,-24 L 12,20 L -12,20 Z"/>
         </svg>
-        <span class="glabel">繝ｭ</span>
+        <span class="glabel">ロ</span>
       </div>
 
-      <!-- 繝・-->
+      <!-- ハ -->
       <div class="gcell g-cyan">
         <svg viewBox="-50 -55 100 110">
           <path d="M -10,-22 L -18,20"/>
           <path d="M 10,-24 L 18,20" class="d2"/>
         </svg>
-        <span class="glabel">繝・/span>
+        <span class="glabel">ハ</span>
       </div>
 
-      <!-- 繝・-->
+      <!-- チ -->
       <div class="gcell g-cyan">
         <svg viewBox="-50 -55 100 110">
           <path d="M -22,-20 L 22,-20"/>
           <path d="M -24,-8 L 24,-8" class="d2"/>
           <path d="M 4,-24 L 4,16 L -18,30" class="d3"/>
         </svg>
-        <span class="glabel">繝・/span>
+        <span class="glabel">チ</span>
       </div>
 
-      <!-- 笆｡ -->
+      <!-- □ -->
       <div class="gcell g-cyan">
         <svg viewBox="-50 -55 100 110">
           <path d="M -24,-28 L 24,-28 L 24,28 L -24,28 Z"/>
         </svg>
-        <span class="glabel">笆｡</span>
+        <span class="glabel">□</span>
       </div>
 
-      <!-- 笙･ -->
+      <!-- ♥ -->
       <div class="gcell g-mag">
         <svg viewBox="-56 -60 112 120">
           <path d="M 0,30 C -6,18 -42,6 -42,-12 C -42,-36 -24,-42 0,-24 C 24,-42 42,-36 42,-12 C 42,6 6,18 0,30 Z"/>
         </svg>
-        <span class="glabel">笙･</span>
+        <span class="glabel">♥</span>
       </div>
 
-      <!-- 笘・-->
+      <!-- ★ -->
       <div class="gcell g-amber">
         <svg viewBox="-56 -60 112 120">
           <path d="M 0,-48 L 12,-15 L 45,-15 L 18,6 L 27,39 L 0,18 L -27,39 L -18,6 L -45,-15 L -12,-15 Z"/>
         </svg>
-        <span class="glabel">笘・/span>
+        <span class="glabel">★</span>
       </div>
 
-      <!-- 笳・-->
+      <!-- ○ -->
       <div class="gcell g-cyan">
         <svg viewBox="-56 -60 112 120">
           <path d="M 0,-42 A 42,42 0 0,1 42,0 A 42,42 0 0,1 0,42 A 42,42 0 0,1 -42,0 A 42,42 0 0,1 0,-42"/>
         </svg>
-        <span class="glabel">笳・/span>
+        <span class="glabel">○</span>
       </div>
 
-      <!-- 笆ｳ -->
+      <!-- △ -->
       <div class="gcell g-cyan">
         <svg viewBox="-56 -60 112 120">
           <path d="M 0,-42 L 36,21 L -36,21 Z"/>
         </svg>
-        <span class="glabel">笆ｳ</span>
+        <span class="glabel">△</span>
       </div>
 
       <!-- d -->
@@ -657,78 +649,71 @@
       <!-- DigiKey wide -->
       <div class="gcell gcell-wide g-orange">
         <svg viewBox="-95 -45 190 90" style="width:78%;height:55%;">
-          <!-- D -->
           <path d="M -82,-36 L -82,36"/>
           <path d="M -82,-36 C -74,-42 -58,-42 -50,-24 L -50,24 C -58,42 -74,42 -82,36" class="d2"/>
-          <!-- i -->
           <path d="M -34,-36 L -34,36" class="d2"/>
-          <!-- g -->
           <path d="M -12,8 C -12,20 -20,26 -28,20 L -28,8 C -28,-4 -18,-8 -12,-2 L -12,-14 C -12,-20 -20,-22 -28,-14" class="d2"/>
-          <!-- i -->
           <path d="M 4,-36 L 4,36" class="d2"/>
-          <!-- K -->
           <path d="M 20,-36 L 20,36" class="d2"/>
           <path d="M 20,0 L 42,-36" class="d2"/>
           <path d="M 20,0 L 42,36" class="d3"/>
-          <!-- e -->
           <path d="M 52,-2 L 76,-2 C 76,-22 52,-24 52,-2 C 52,18 76,20 76,8" class="d3"/>
-          <!-- y -->
           <path d="M 84,-36 L 92,4" class="d3"/>
           <path d="M 100,-36 L 92,4 L 88,36" class="d3"/>
         </svg>
-        <span class="glabel" style="color:var(--orange);">DigiKey 窶・7-char sequence</span>
+        <span class="glabel" style="color:var(--orange);">DigiKey — 7文字シーケンス</span>
       </div>
 
     </div>
   </div>
 </section>
 
-<!-- 笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊・BOM 笊絶武笊絶武笊絶武 -->
+<!-- BOM -->
 <section id="bom">
   <div class="inner">
     <div class="reveal">
-      <p class="sec-label">04 / Hardware</p>
-      <h2>Bill of Materials</h2>
+      <p class="sec-label">04 / ハードウェア</p>
+      <h2>部品リスト</h2>
     </div>
     <div class="bom-cols reveal delay1">
       <div>
-        <p class="bom-group-title" style="color:var(--cyan)">Drawing Device</p>
+        <p class="bom-group-title" style="color:var(--cyan)">描画機（Drawing）</p>
         <div class="bom-row">
           <span class="bom-part">M5Stack AtomS3R-CAM</span>
-          <span class="bom-note">ESP32-S3 ﾂｷ main controller + OV2640 camera</span>
+          <span class="bom-note">ESP32-S3 · メインコントローラ + OV2640カメラ</span>
         </div>
         <div class="bom-row">
-          <span class="bom-part">Micro servo ﾃ・2</span>
-          <span class="bom-note">G25 (servo 1) / G26 (servo 2)</span>
+          <span class="bom-part">マイクロサーボ × 2</span>
+          <span class="bom-note">G25（サーボ1）/ G26（サーボ2）</span>
         </div>
         <div class="bom-row">
-          <span class="bom-part">WS2812B LED ﾃ・1</span>
-          <span class="bom-note">G0 ﾂｷ mounted at linkage coupler point</span>
+          <span class="bom-part">WS2812B LED × 1</span>
+          <span class="bom-note">G0 · リンク機構クーラー点に搭載</span>
         </div>
         <div class="bom-row">
-          <span class="bom-part">4-servo connection board <em style="color:var(--orange);font-style:normal;font-size:.8em">[self-made]</em></span>
-          <span class="bom-note">servo power routing, based on Switch Science PCB</span>
-          <a href="https://ssci.to/11122" class="bom-link" target="_blank">竊・Switch Science ssci.to/11122</a>
+          <span class="bom-part">4サーボ接続基板 <em style="color:var(--orange);font-style:normal;font-size:.8em">［自作］</em></span>
+          <span class="bom-note">サーボ電源供給ボード</span>
+          <a href="https://ssci.to/11122" class="bom-link" target="_blank">→ スイッチサイエンス ssci.to/11122</a>
         </div>
         <div class="bom-row">
-          <span class="bom-part">5-bar linkage frame</span>
-          <span class="bom-note">custom fabricated ﾂｷ all links 60 mm, D = 36 mm</span>
+          <span class="bom-part">5節リンク機構フレーム</span>
+          <span class="bom-note">自作 · 全リンク長 60mm、ピボット間隔 D = 36mm</span>
         </div>
       </div>
       <div>
-        <p class="bom-group-title" style="color:var(--magenta)">Display Device</p>
+        <p class="bom-group-title" style="color:var(--magenta)">表示機（Display）</p>
         <div class="bom-row">
           <span class="bom-part">M5Stack AtomS3R</span>
-          <span class="bom-note">ESP32-S3 ﾂｷ controller + built-in 128ﾃ・28 LCD</span>
+          <span class="bom-note">ESP32-S3 · コントローラ + 内蔵 128×128 LCD</span>
         </div>
         <div class="bom-row">
-          <span class="bom-part">Mini controller <em style="color:var(--orange);font-style:normal;font-size:.8em">[self-made]</em></span>
-          <span class="bom-note">joystick (G8/G7) + 3 buttons, handheld form</span>
-          <a href="https://ssci.to/9520" class="bom-link" target="_blank">竊・Switch Science ssci.to/9520</a>
+          <span class="bom-part">ミニコントローラ <em style="color:var(--orange);font-style:normal;font-size:.8em">［自作］</em></span>
+          <span class="bom-note">ジョイスティック (G8/G7) + ボタン3個、ハンドヘルド型</span>
+          <a href="https://ssci.to/9520" class="bom-link" target="_blank">→ スイッチサイエンス ssci.to/9520</a>
         </div>
         <div class="bom-row" style="border-bottom:none">
-          <p class="bom-note" style="line-height:1.8;margin-top:.5rem">
-            Build with PlatformIO:<br>
+          <p class="bom-note" style="line-height:1.9;margin-top:.5rem">
+            PlatformIO でビルド・書き込み:<br>
             <code style="color:var(--cyan)">pio run -e Drawing --target upload</code><br>
             <code style="color:var(--magenta)">pio run -e Display --target upload</code>
           </p>
@@ -738,59 +723,52 @@
   </div>
 </section>
 
-<!-- 笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊・FOOTER 笊絶武笊・-->
+<!-- FOOTER -->
 <footer>
   <div class="footer-inner">
     <div>
       <p class="footer-brand-name">LumiGlyph</p>
-      <p class="footer-desc">5-bar linkage LED light-drawing machine.<br>DigiKey Make ONE 2026 entry by sin1's studio.</p>
+      <p class="footer-desc">5節リンク機構搭載LEDライトペインティングマシン。DigiKey Make ONE 2026 出展作品。</p>
     </div>
     <div class="footer-links">
       <a href="https://sin1.studio/" target="_blank">sin1's studio</a>
-      <a href="https://protopedia.net/prototype/8594" target="_blank">ProtoPedia</a>
-      <a href="https://github.com/sin1n24/LumiGlyphProtoPedia" target="_blank">Source Code (GitHub)</a>
-      <a href="https://ssci.to/11122" target="_blank">4-servo board 窶・Switch Science</a>
-      <a href="https://ssci.to/9520" target="_blank">Mini controller 窶・Switch Science</a>
+      <a href="https://protopedia.net/prototype/8594" target="_blank">ProtoPedia 作品ページ</a>
+      <a href="https://github.com/sin1n24/LumiGlyphProtoPedia" target="_blank">ソースコード（GitHub）</a>
+      <a href="https://ssci.to/11122" target="_blank">4サーボ基板 — スイッチサイエンス</a>
+      <a href="https://ssci.to/9520" target="_blank">ミニコントローラ — スイッチサイエンス</a>
     </div>
   </div>
   <div class="footer-copy">
-    <span>ﾂｩ sin1's studio</span>
+    <span>© sin1's studio</span>
     <span>MIT License</span>
   </div>
 </footer>
 
-<!-- 笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊絶武笊・SCRIPTS 笊絶武 -->
+<!-- SCRIPTS -->
 <script>
-// 笏笏 HERO CANVAS: long-exposure 5-bar linkage simulation 笏笏笏笏笏笏笏笏笏
+// ── HERO CANVAS: long-exposure 5-bar linkage simulation ──────────
 ;(function(){
   const cv = document.getElementById('hero-canvas');
   const cx = cv.getContext('2d');
   let W, H, ox, oy, sc;
-
   function resize() {
     W = cv.width  = window.innerWidth;
     H = cv.height = window.innerHeight;
     sc = Math.min(W, H) * 0.21;
-    ox = W * 0.5;
-    oy = H * 0.52;
+    ox = W * 0.5; oy = H * 0.52;
   }
   resize();
   window.addEventListener('resize', resize);
-
-  // 5-bar forward kinematics (normalized: L=1, D=0.6)
   const L = 1, D = 0.6;
   function fk(t1, t2) {
     const ax = Math.cos(t1), ay = Math.sin(t1);
     const bx = D + Math.cos(t2), by = Math.sin(t2);
-    const dx = bx-ax, dy = by-ay;
-    const d  = Math.sqrt(dx*dx+dy*dy);
-    if (d > 2||d < 1e-5) return null;
-    const h  = Math.sqrt(Math.max(0,1-d*d/4));
+    const dx = bx-ax, dy = by-ay, d = Math.sqrt(dx*dx+dy*dy);
+    if (d > 2 || d < 1e-5) return null;
+    const h = Math.sqrt(Math.max(0, 1-d*d/4));
     const mx = (ax+bx)/2, my = (ay+by)/2;
     return { x: mx-h*dy/d-D/2, y: my+h*dx/d };
   }
-
-  // Three independent traces with different parametric frequencies
   const TRACES = [
     { f1:.29,f2:.43,p1:0,   p2:1.3, a1:.62,a2:.55, hue:185 },
     { f1:.17,f2:.37,p1:2.1, p2:.5,  a1:.5, a2:.58, hue:300 },
@@ -799,12 +777,10 @@
   const BASE1 = Math.PI*0.42, BASE2 = Math.PI*0.75;
   const TRAIL = 200;
   const pts = TRACES.map(()=>[]);
-
   function frame(now) {
     const t = now * 2.8e-4;
     cx.fillStyle = 'rgba(3,3,7,0.022)';
     cx.fillRect(0,0,W,H);
-
     TRACES.forEach((tr,ti)=>{
       const t1 = BASE1 + tr.a1*Math.sin(tr.f1*t+tr.p1) + .14*Math.sin(tr.f1*2.1*t);
       const t2 = BASE2 + tr.a2*Math.cos(tr.f2*t+tr.p2) + .14*Math.cos(tr.f2*1.8*t);
@@ -813,18 +789,12 @@
       const p = pts[ti];
       p.push({x:sx,y:sy});
       if(p.length>TRAIL) p.shift();
-
-      // Trail
       for(let i=1;i<p.length;i++){
         const a=(i/p.length)*.72;
-        cx.beginPath();
-        cx.moveTo(p[i-1].x,p[i-1].y);
-        cx.lineTo(p[i].x,p[i].y);
+        cx.beginPath(); cx.moveTo(p[i-1].x,p[i-1].y); cx.lineTo(p[i].x,p[i].y);
         cx.strokeStyle=`hsla(${tr.hue},100%,68%,${a})`;
-        cx.lineWidth=.8+(i/p.length)*1.4;
-        cx.stroke();
+        cx.lineWidth=.8+(i/p.length)*1.4; cx.stroke();
       }
-      // LED glow
       if(p.length){
         const q=p[p.length-1];
         const g=cx.createRadialGradient(q.x,q.y,0,q.x,q.y,14);
@@ -840,19 +810,17 @@
   requestAnimationFrame(frame);
 })();
 
-// 笏笏 SVG LINKAGE ANIMATION 笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
+// ── SVG LINKAGE ANIMATION ────────────────────────────────────────
 ;(function(){
-  const a1=document.getElementById('lk-a1'),a2=document.getElementById('lk-a2');
-  const a3=document.getElementById('lk-a3'),a4=document.getElementById('lk-a4');
-  const led=document.getElementById('lk-led'),glow=document.getElementById('lk-glow');
+  const a1=document.getElementById('lk-a1'), a2=document.getElementById('lk-a2');
+  const a3=document.getElementById('lk-a3'), a4=document.getElementById('lk-a4');
+  const led=document.getElementById('lk-led'), glow=document.getElementById('lk-glow');
   const core=document.getElementById('lk-core');
-  const j1=document.getElementById('lk-j1'),j2=document.getElementById('lk-j2');
+  const j1=document.getElementById('lk-j1'), j2=document.getElementById('lk-j2');
   const trail=document.getElementById('lk-trail');
-
-  const SC=42, OX=0, OY=120, D=0.6;
+  const SC=42, OY=120, D=0.6;
   const P1={x:-18,y:OY}, P2={x:18,y:OY};
   let tr=[];
-
   function fk(t1,t2){
     const ax=Math.cos(t1),ay=Math.sin(t1);
     const bx=D+Math.cos(t2),by=Math.sin(t2);
@@ -862,14 +830,12 @@
     const mx=(ax+bx)/2,my=(ay+by)/2;
     return{x:mx-h*dy/d,y:my+h*dx/d,ax,ay,bx,by};
   }
-
-  function toS(x,y){return{x:OX+(x-D/2)*SC,y:OY-y*SC};}
-  function setLine(el,x1,y1,x2,y2){
+  function toS(x,y){return{x:(x-D/2)*SC,y:OY-y*SC};}
+  function sl(el,x1,y1,x2,y2){
     el.setAttribute('x1',x1);el.setAttribute('y1',y1);
     el.setAttribute('x2',x2);el.setAttribute('y2',y2);
   }
-  function setCxy(el,x,y){el.setAttribute('cx',x);el.setAttribute('cy',y);}
-
+  function sc2(el,x,y){el.setAttribute('cx',x);el.setAttribute('cy',y);}
   function step(now){
     const t=now*2.6e-4;
     const t1=Math.PI*.42+.58*Math.sin(.3*t)+.14*Math.sin(.68*t);
@@ -877,10 +843,10 @@
     const r=fk(t1,t2);
     if(!r){requestAnimationFrame(step);return;}
     const A=toS(r.ax,r.ay),B=toS(r.bx,r.by),C=toS(r.x,r.y);
-    setLine(a1,P1.x,P1.y,A.x,A.y); setLine(a2,P2.x,P2.y,B.x,B.y);
-    setLine(a3,A.x,A.y,C.x,C.y);   setLine(a4,B.x,B.y,C.x,C.y);
-    setCxy(led,C.x,C.y); setCxy(glow,C.x,C.y); setCxy(core,C.x,C.y);
-    setCxy(j1,A.x,A.y);  setCxy(j2,B.x,B.y);
+    sl(a1,P1.x,P1.y,A.x,A.y); sl(a2,P2.x,P2.y,B.x,B.y);
+    sl(a3,A.x,A.y,C.x,C.y);   sl(a4,B.x,B.y,C.x,C.y);
+    sc2(led,C.x,C.y); sc2(glow,C.x,C.y); sc2(core,C.x,C.y);
+    sc2(j1,A.x,A.y);  sc2(j2,B.x,B.y);
     tr.push(C.x+','+C.y);
     if(tr.length>90) tr.shift();
     trail.setAttribute('points',tr.join(' '));
@@ -889,12 +855,12 @@
   requestAnimationFrame(step);
 })();
 
-// 笏笏 NAV SCROLL 笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
+// ── NAV SCROLL ───────────────────────────────────────────────────
 window.addEventListener('scroll',()=>{
   document.getElementById('nav').classList.toggle('scrolled',scrollY>50);
 },{passive:true});
 
-// 笏笏 GLYPH HOVER (stroke-dashoffset) 笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
+// ── GLYPH HOVER ──────────────────────────────────────────────────
 document.querySelectorAll('.gcell path').forEach(p=>{
   const len = p.getTotalLength ? p.getTotalLength() : 320;
   p.style.strokeDasharray = len;
@@ -902,9 +868,8 @@ document.querySelectorAll('.gcell path').forEach(p=>{
 });
 document.querySelectorAll('.gcell').forEach(cell=>{
   cell.addEventListener('mouseenter',()=>{
-    cell.querySelectorAll('path').forEach((p,i)=>{
-      const delay = p.classList.contains('d3') ? .6
-                  : p.classList.contains('d2') ? .3 : 0;
+    cell.querySelectorAll('path').forEach(p=>{
+      const delay = p.classList.contains('d3') ? .6 : p.classList.contains('d2') ? .3 : 0;
       p.style.transition = `stroke-dashoffset .9s ease ${delay}s`;
       p.style.strokeDashoffset = 0;
     });
@@ -917,7 +882,7 @@ document.querySelectorAll('.gcell').forEach(cell=>{
   });
 });
 
-// 笏笏 INTERSECTION OBSERVER 笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏笏
+// ── INTERSECTION OBSERVER ────────────────────────────────────────
 const obs = new IntersectionObserver(entries=>{
   entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('vis'); obs.unobserve(e.target); } });
 },{threshold:.1});
@@ -925,4 +890,3 @@ document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
 </script>
 </body>
 </html>
-

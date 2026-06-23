@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LumiGraph — LED Light Drawing Machine</title>
+  <meta name="description" content="5-bar linkage LED light-drawing machine. DigiKey Make ONE 2026 entry by sin1's studio.">
+  <meta property="og:title" content="LumiGraph">
+  <meta property="og:description" content="5-bar linkage × WS2812B — light painting with precision mechanics">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,300;1,300;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg:      #030307;
+      --bg2:     #09091A;
+      --bg3:     #0E0E22;
+      --text:    #DDD9CF;
+      --dim:     rgba(221,217,207,0.45);
+      --cyan:    #00E8FF;
+      --orange:  #FF7B00;
+      --magenta: #FF00AA;
+      --amber:   #FFB800;
+      --border:  rgba(255,255,255,0.07);
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 16px;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── NAV ─────────────────────────────────────── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.4rem 3rem;
+      transition: background .4s, backdrop-filter .4s;
+    }
+    nav.scrolled {
+      background: rgba(3,3,7,.88);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      font-family: 'Cinzel', serif;
+      font-size: .95rem;
+      letter-spacing: .3em;
+      text-transform: uppercase;
+      color: var(--text);
+      text-decoration: none;
+    }
+    .nav-links { display: flex; gap: 2.2rem; list-style: none; }
+    .nav-links a {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .68rem;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--dim);
+      text-decoration: none;
+      transition: color .2s;
+    }
+    .nav-links a:hover { color: var(--cyan); }
+
+    /* ── HERO ────────────────────────────────────── */
+    #hero {
+      position: relative;
+      height: 100vh; min-height: 600px;
+      display: flex; align-items: center; justify-content: center;
+      text-align: center; overflow: hidden;
+    }
+    #hero-canvas {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+    }
+    /* vignette overlay */
+    #hero::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 70% 60% at 50% 50%,
+        transparent 30%, rgba(3,3,7,.5) 70%, rgba(3,3,7,.95) 100%);
+      pointer-events: none;
+    }
+
+    .hero-inner {
+      position: relative; z-index: 10;
+      display: flex; flex-direction: column; align-items: center; gap: 1.6rem;
+    }
+    .hero-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .68rem;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: var(--orange);
+      border: 1px solid rgba(255,123,0,.5);
+      padding: .38em 1.3em;
+      opacity: 0;
+      animation: fadeUp .8s .2s forwards;
+    }
+    h1 {
+      font-family: 'Cinzel', serif;
+      font-size: clamp(4.5rem, 13vw, 10rem);
+      font-weight: 700;
+      letter-spacing: .08em;
+      line-height: .88;
+      text-transform: uppercase;
+      background: linear-gradient(145deg, #fff 25%, var(--cyan) 60%, #fff 85%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      opacity: 0;
+      animation: fadeUp 1s .5s forwards;
+    }
+    .hero-tagline {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-weight: 300;
+      font-size: clamp(1rem, 2.4vw, 1.45rem);
+      color: var(--dim);
+      letter-spacing: .06em;
+      opacity: 0;
+      animation: fadeUp .8s .9s forwards;
+    }
+    .hero-ctas {
+      display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;
+      margin-top: .5rem;
+      opacity: 0;
+      animation: fadeUp .8s 1.2s forwards;
+    }
+    .btn {
+      display: inline-flex; align-items: center; gap: .5em;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .72rem; letter-spacing: .14em; text-transform: uppercase;
+      text-decoration: none;
+      padding: .78em 2em;
+      border: 1px solid;
+      transition: background .22s, color .22s, border-color .22s;
+    }
+    .btn-primary {
+      color: var(--bg); background: var(--cyan); border-color: var(--cyan);
+    }
+    .btn-primary:hover { background: transparent; color: var(--cyan); }
+    .btn-ghost {
+      color: var(--text); background: transparent; border-color: var(--border);
+    }
+    .btn-ghost:hover { border-color: rgba(255,255,255,.35); }
+
+    .scroll-hint {
+      position: absolute; bottom: 2.2rem; left: 50%; transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: .55rem;
+      z-index: 10;
+      opacity: 0; animation: fadeIn 1s 2s forwards;
+    }
+    .scroll-hint span {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .6rem; letter-spacing: .22em; color: var(--dim);
+    }
+    .scroll-line {
+      width: 1px; height: 44px;
+      background: linear-gradient(to bottom, rgba(221,217,207,.4), transparent);
+      animation: lineFlash 2.2s 2s ease-in-out infinite;
+    }
+
+    /* ── SECTION COMMON ──────────────────────────── */
+    section { padding: 7rem 3rem; }
+    .inner { max-width: 1200px; margin: 0 auto; }
+    .sec-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .66rem; letter-spacing: .28em; text-transform: uppercase;
+      color: var(--cyan); margin-bottom: .9rem;
+    }
+    h2 {
+      font-family: 'Cinzel', serif;
+      font-size: clamp(1.9rem, 4vw, 3.2rem);
+      font-weight: 400; letter-spacing: .04em; line-height: 1.15;
+      margin-bottom: 1.6rem;
+    }
+    .body-text {
+      color: var(--dim); line-height: 1.85; font-size: .98rem; max-width: 54ch;
+    }
+    .body-text + .body-text { margin-top: 1rem; }
+
+    /* ── CONCEPT ─────────────────────────────────── */
+    #concept { border-top: 1px solid var(--border); }
+    .concept-layout {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 5rem; align-items: center;
+    }
+    .linkage-wrap {
+      position: relative;
+      aspect-ratio: 1;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .linkage-glow {
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 60% 60% at 50% 65%,
+        rgba(0,232,255,.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    #svg-linkage { width: 100%; max-width: 380px; overflow: visible; }
+
+    /* ── SYSTEM ──────────────────────────────────── */
+    #system { border-top: 1px solid var(--border); padding-top: 0; }
+    .device-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 2px; margin-top: 3rem;
+    }
+    .device-card {
+      background: var(--bg2); padding: 3rem;
+      position: relative; overflow: hidden;
+    }
+    .device-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    }
+    .card-draw::before { background: var(--cyan); }
+    .card-disp::before { background: var(--magenta); }
+    .dev-role {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .63rem; letter-spacing: .24em; text-transform: uppercase;
+      margin-bottom: .4rem;
+    }
+    .card-draw .dev-role { color: var(--cyan); }
+    .card-disp .dev-role { color: var(--magenta); }
+    .dev-name {
+      font-family: 'Cinzel', serif;
+      font-size: 1.35rem; letter-spacing: .05em; margin-bottom: 2rem;
+    }
+    .spec-list { list-style: none; display: flex; flex-direction: column; gap: 0; }
+    .spec-item {
+      display: flex; gap: 1.2rem;
+      padding: .7rem 0;
+      border-bottom: 1px solid var(--border);
+      font-size: .88rem;
+    }
+    .spec-key {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .66rem; color: var(--dim);
+      min-width: 5.5rem; padding-top: .15em; letter-spacing: .04em;
+    }
+    .esp-bridge {
+      grid-column: 1/-1;
+      background: var(--bg); border: 1px solid var(--border);
+      padding: 1.4rem 2rem;
+      display: flex; align-items: center; justify-content: center; gap: 1.8rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .72rem; letter-spacing: .1em; color: var(--dim);
+    }
+    .esp-wire {
+      flex: 1; height: 1px;
+      background: repeating-linear-gradient(90deg,
+        var(--amber) 0, var(--amber) 5px, transparent 5px, transparent 10px);
+    }
+    .esp-label { color: var(--amber); }
+
+    /* ── GLYPHS ──────────────────────────────────── */
+    #glyphs { border-top: 1px solid var(--border); }
+    .glyph-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 2px; margin-top: 3rem;
+    }
+    .gcell {
+      background: var(--bg2);
+      aspect-ratio: 1;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: .8rem;
+      cursor: default; transition: background .2s;
+      position: relative; overflow: hidden;
+    }
+    .gcell:hover { background: var(--bg3); }
+    .gcell svg { width: 56%; height: 56%; overflow: visible; }
+    .gcell path {
+      stroke-linecap: round; stroke-linejoin: round;
+      fill: none; stroke-width: 3;
+      stroke-dasharray: 400; stroke-dashoffset: 400;
+      transition: stroke-dashoffset 0s;
+    }
+    .gcell:hover path { transition: stroke-dashoffset 1s ease; stroke-dashoffset: 0; }
+    .gcell path.d2 { transition-delay: .3s; }
+    .gcell path.d3 { transition-delay: .6s; }
+    .g-cyan path { stroke: var(--cyan); filter: drop-shadow(0 0 5px rgba(0,232,255,.6)); }
+    .g-orange path { stroke: var(--orange); filter: drop-shadow(0 0 5px rgba(255,123,0,.6)); }
+    .g-mag path { stroke: var(--magenta); filter: drop-shadow(0 0 5px rgba(255,0,170,.6)); }
+    .g-amber path { stroke: var(--amber); filter: drop-shadow(0 0 5px rgba(255,184,0,.6)); }
+    .glabel {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .62rem; letter-spacing: .1em; color: var(--dim);
+    }
+    .gcell-wide { grid-column: span 2; aspect-ratio: 2; }
+    .gcell-wide svg { width: 70%; height: 55%; }
+
+    /* ── BOM ─────────────────────────────────────── */
+    #bom { border-top: 1px solid var(--border); }
+    .bom-cols {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 4rem; margin-top: 3rem;
+    }
+    .bom-group-title {
+      font-family: 'Cinzel', serif;
+      font-size: .88rem; letter-spacing: .15em; text-transform: uppercase;
+      padding-bottom: .75rem; margin-bottom: .5rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .bom-row {
+      padding: .8rem 0; border-bottom: 1px solid var(--border);
+      display: flex; flex-direction: column; gap: .25rem;
+    }
+    .bom-part { font-size: .9rem; }
+    .bom-note {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .68rem; color: var(--dim);
+    }
+    .bom-link {
+      display: inline-block; margin-top: .35rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .68rem; letter-spacing: .08em;
+      color: var(--orange); text-decoration: none;
+      border-bottom: 1px solid rgba(255,123,0,.3);
+      transition: border-color .2s;
+    }
+    .bom-link:hover { border-color: var(--orange); }
+
+    /* ── FOOTER ──────────────────────────────────── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 5rem 3rem 3rem;
+    }
+    .footer-inner {
+      max-width: 1200px; margin: 0 auto;
+      display: grid; grid-template-columns: 1fr auto;
+      gap: 3rem; align-items: start;
+    }
+    .footer-brand-name {
+      font-family: 'Cinzel', serif;
+      font-size: 1.2rem; letter-spacing: .3em; margin-bottom: .8rem;
+    }
+    .footer-desc { font-size: .88rem; color: var(--dim); max-width: 28ch; line-height: 1.7; }
+    .footer-links { display: flex; flex-direction: column; gap: .7rem; align-items: flex-end; }
+    .footer-links a {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .68rem; letter-spacing: .1em;
+      color: var(--dim); text-decoration: none; transition: color .2s;
+    }
+    .footer-links a:hover { color: var(--text); }
+    .footer-copy {
+      max-width: 1200px; margin: 3rem auto 0;
+      padding-top: 2rem; border-top: 1px solid var(--border);
+      display: flex; justify-content: space-between;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .62rem; letter-spacing: .1em; color: var(--dim);
+    }
+
+    /* ── REVEAL (IntersectionObserver) ──────────── */
+    .reveal {
+      opacity: 0; transform: translateY(26px);
+      transition: opacity .75s ease, transform .75s ease;
+    }
+    .reveal.vis { opacity: 1; transform: none; }
+    .reveal.delay1 { transition-delay: .12s; }
+    .reveal.delay2 { transition-delay: .24s; }
+
+    /* ── KEYFRAMES ───────────────────────────────── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes lineFlash {
+      0%,100% { opacity: .6; transform: scaleY(1); }
+      50%      { opacity: .2; transform: scaleY(.55); }
+    }
+
+    /* ── RESPONSIVE ──────────────────────────────── */
+    @media (max-width: 820px) {
+      nav { padding: 1.1rem 1.4rem; }
+      .nav-links { display: none; }
+      section { padding: 5rem 1.4rem; }
+      .concept-layout, .device-grid, .bom-cols { grid-template-columns: 1fr; }
+      .concept-layout { gap: 3rem; }
+      .esp-bridge { grid-column: 1; }
+      footer .footer-inner { grid-template-columns: 1fr; }
+      .footer-links { align-items: flex-start; }
+      .footer-copy { flex-direction: column; gap: .5rem; }
+      .glyph-grid { grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); }
+      .gcell-wide { grid-column: span 2; }
+      h1 { font-size: clamp(3.5rem, 16vw, 6rem); }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════ NAV ═════ -->
+<nav id="nav">
+  <a href="#" class="nav-logo">LumiGraph</a>
+  <ul class="nav-links">
+    <li><a href="#concept">Concept</a></li>
+    <li><a href="#system">System</a></li>
+    <li><a href="#glyphs">Glyphs</a></li>
+    <li><a href="#bom">Hardware</a></li>
+    <li><a href="https://protopedia.net/prototype/8594" target="_blank">ProtoPedia ↗</a></li>
+  </ul>
+</nav>
+
+<!-- ═══════════════════════════════ HERO ════ -->
+<section id="hero">
+  <canvas id="hero-canvas"></canvas>
+  <div class="hero-inner">
+    <div class="hero-badge">DigiKey Make ONE 2026</div>
+    <h1>Lumi<br>Graph</h1>
+    <p class="hero-tagline">5-bar linkage × WS2812B — light painting with precision mechanics</p>
+    <div class="hero-ctas">
+      <a href="https://protopedia.net/prototype/8594" class="btn btn-primary" target="_blank">ProtoPedia</a>
+      <a href="https://github.com/sin1n24/LumiGlyphProtoPedia" class="btn btn-ghost" target="_blank">GitHub</a>
+      <a href="https://sin1.studio/" class="btn btn-ghost" target="_blank">sin1's studio</a>
+    </div>
+  </div>
+  <div class="scroll-hint">
+    <span>Scroll</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════ CONCEPT ══ -->
+<section id="concept">
+  <div class="inner concept-layout">
+    <div class="reveal">
+      <p class="sec-label">01 / Concept</p>
+      <h2>Light meets<br>Mechanism</h2>
+      <p class="body-text">A WS2812B LED rides the coupler point of a symmetric 5-bar planar linkage. As two micro servos sweep their angles, inverse kinematics guides the LED through precise glyph strokes.</p>
+      <p class="body-text">The Display device accumulates a per-pixel maximum-brightness composite over ESP-NOW camera frames — producing luminous calligraphy from long-exposure light painting.</p>
+      <p class="body-text" style="margin-top:1.5rem;font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--dim);letter-spacing:.04em;">
+        L1 = L2 = L3 = L4 = 60 mm &nbsp;·&nbsp; D = 36 mm<br>
+        workspace center ≈ (18, 75) mm
+      </p>
+    </div>
+    <div class="linkage-wrap reveal delay1">
+      <div class="linkage-glow"></div>
+      <!-- Animated 5-bar linkage SVG -->
+      <svg id="svg-linkage" viewBox="-90 -20 180 180" xmlns="http://www.w3.org/2000/svg">
+        <!-- Ground bar -->
+        <line x1="-18" y1="120" x2="18" y2="120" stroke="#2A2A42" stroke-width="2"/>
+        <circle cx="-18" cy="120" r="4" fill="#2A2A42"/>
+        <circle cx="18"  cy="120" r="4" fill="#2A2A42"/>
+        <!-- Ground label -->
+        <text x="0" y="140" text-anchor="middle" font-family="'JetBrains Mono',monospace"
+          font-size="7" fill="rgba(221,217,207,0.25)" letter-spacing="1">GROUND</text>
+        <!-- Light trail -->
+        <polyline id="lk-trail" fill="none" stroke="#00E8FF" stroke-width="1.2"
+          stroke-linecap="round" stroke-linejoin="round" opacity=".5"/>
+        <!-- Arms -->
+        <line id="lk-a1" stroke="#00E8FF" stroke-width="2" stroke-linecap="round" opacity=".65"/>
+        <line id="lk-a2" stroke="#FF00AA" stroke-width="2" stroke-linecap="round" opacity=".65"/>
+        <line id="lk-a3" stroke="#00E8FF" stroke-width="2" stroke-linecap="round" opacity=".4"/>
+        <line id="lk-a4" stroke="#FF00AA" stroke-width="2" stroke-linecap="round" opacity=".4"/>
+        <!-- Joints -->
+        <circle id="lk-j1" r="3.5" fill="#00E8FF" opacity=".7"/>
+        <circle id="lk-j2" r="3.5" fill="#FF00AA" opacity=".7"/>
+        <!-- LED coupler glow -->
+        <circle id="lk-glow" r="14" fill="#00E8FF" opacity=".12"/>
+        <circle id="lk-led" r="4.5" fill="#00E8FF">
+          <animate attributeName="r" values="4;6;4" dur=".9s" repeatCount="indefinite"/>
+        </circle>
+        <circle id="lk-core" r="2" fill="#ffffff"/>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════ SYSTEM ═══ -->
+<section id="system" style="padding-top:0">
+  <div class="inner">
+    <div class="reveal">
+      <p class="sec-label">02 / System</p>
+      <h2>Two devices,<br>one wireless link</h2>
+    </div>
+    <div class="device-grid reveal delay1">
+      <!-- Drawing -->
+      <div class="device-card card-draw">
+        <p class="dev-role">Drawing</p>
+        <p class="dev-name">M5Stack AtomS3R-CAM</p>
+        <ul class="spec-list">
+          <li class="spec-item"><span class="spec-key">MCU</span><span>ESP32-S3</span></li>
+          <li class="spec-item"><span class="spec-key">Servos</span><span>2× micro servo — G25, G26</span></li>
+          <li class="spec-item"><span class="spec-key">LED</span><span>WS2812B × 1 — G0</span></li>
+          <li class="spec-item"><span class="spec-key">Linkage</span><span>L1=L2=L3=L4=60 mm, D=36 mm</span></li>
+          <li class="spec-item"><span class="spec-key">Role</span><span>IK, servo drive, LED, camera stream</span></li>
+        </ul>
+      </div>
+      <!-- Display -->
+      <div class="device-card card-disp">
+        <p class="dev-role">Display</p>
+        <p class="dev-name">M5Stack AtomS3R</p>
+        <ul class="spec-list">
+          <li class="spec-item"><span class="spec-key">MCU</span><span>ESP32-S3</span></li>
+          <li class="spec-item"><span class="spec-key">Input</span><span>Joystick (G8/G7) + 3 buttons</span></li>
+          <li class="spec-item"><span class="spec-key">Display</span><span>Built-in 128×128 LCD</span></li>
+          <li class="spec-item"><span class="spec-key">Protocol</span><span>ESP-NOW</span></li>
+          <li class="spec-item"><span class="spec-key">Role</span><span>Long-exposure composite, menu, REC/PLAY</span></li>
+        </ul>
+      </div>
+      <div class="esp-bridge">
+        <div class="esp-wire"></div>
+        <span class="esp-label">ESP-NOW</span>
+        <span>camera frames + glyph packets</span>
+        <div class="esp-wire"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════ GLYPHS ═══ -->
+<section id="glyphs">
+  <div class="inner">
+    <div class="reveal">
+      <p class="sec-label">03 / Glyphs</p>
+      <h2>Hover to draw</h2>
+      <p class="body-text">All strokes are authored as <code style="font-family:'JetBrains Mono',monospace;font-size:.85em;color:var(--cyan)">int8_t</code> coordinate streams in <code style="font-family:'JetBrains Mono',monospace;font-size:.85em;color:var(--cyan)">src/glyphs.h</code>. Scale: 0.5 mm/unit. Workspace: 28 × 34 mm.</p>
+    </div>
+    <div class="glyph-grid reveal delay1">
+
+      <!-- イ -->
+      <div class="gcell g-cyan">
+        <svg viewBox="-50 -55 100 110">
+          <path d="M 10,-24 L -16,-8"/>
+          <path d="M 7,-12 L 7,17" class="d2"/>
+        </svg>
+        <span class="glabel">イ</span>
+      </div>
+
+      <!-- ロ -->
+      <div class="gcell g-cyan">
+        <svg viewBox="-50 -55 100 110">
+          <path d="M -12,-24 L 12,-24 L 12,20 L -12,20 Z"/>
+        </svg>
+        <span class="glabel">ロ</span>
+      </div>
+
+      <!-- ハ -->
+      <div class="gcell g-cyan">
+        <svg viewBox="-50 -55 100 110">
+          <path d="M -10,-22 L -18,20"/>
+          <path d="M 10,-24 L 18,20" class="d2"/>
+        </svg>
+        <span class="glabel">ハ</span>
+      </div>
+
+      <!-- チ -->
+      <div class="gcell g-cyan">
+        <svg viewBox="-50 -55 100 110">
+          <path d="M -22,-20 L 22,-20"/>
+          <path d="M -24,-8 L 24,-8" class="d2"/>
+          <path d="M 4,-24 L 4,16 L -18,30" class="d3"/>
+        </svg>
+        <span class="glabel">チ</span>
+      </div>
+
+      <!-- □ -->
+      <div class="gcell g-cyan">
+        <svg viewBox="-50 -55 100 110">
+          <path d="M -24,-28 L 24,-28 L 24,28 L -24,28 Z"/>
+        </svg>
+        <span class="glabel">□</span>
+      </div>
+
+      <!-- ♥ -->
+      <div class="gcell g-mag">
+        <svg viewBox="-56 -60 112 120">
+          <path d="M 0,30 C -6,18 -42,6 -42,-12 C -42,-36 -24,-42 0,-24 C 24,-42 42,-36 42,-12 C 42,6 6,18 0,30 Z"/>
+        </svg>
+        <span class="glabel">♥</span>
+      </div>
+
+      <!-- ★ -->
+      <div class="gcell g-amber">
+        <svg viewBox="-56 -60 112 120">
+          <path d="M 0,-48 L 12,-15 L 45,-15 L 18,6 L 27,39 L 0,18 L -27,39 L -18,6 L -45,-15 L -12,-15 Z"/>
+        </svg>
+        <span class="glabel">★</span>
+      </div>
+
+      <!-- ○ -->
+      <div class="gcell g-cyan">
+        <svg viewBox="-56 -60 112 120">
+          <path d="M 0,-42 A 42,42 0 0,1 42,0 A 42,42 0 0,1 0,42 A 42,42 0 0,1 -42,0 A 42,42 0 0,1 0,-42"/>
+        </svg>
+        <span class="glabel">○</span>
+      </div>
+
+      <!-- △ -->
+      <div class="gcell g-cyan">
+        <svg viewBox="-56 -60 112 120">
+          <path d="M 0,-42 L 36,21 L -36,21 Z"/>
+        </svg>
+        <span class="glabel">△</span>
+      </div>
+
+      <!-- d -->
+      <div class="gcell g-orange">
+        <svg viewBox="-35 -50 70 100">
+          <path d="M 10,-40 L 10,40"/>
+          <path d="M 10,-4 C 10,-18 -18,-18 -18,-4 L -18,4 C -18,18 10,18 10,4" class="d2"/>
+        </svg>
+        <span class="glabel">d</span>
+      </div>
+
+      <!-- i -->
+      <div class="gcell g-orange">
+        <svg viewBox="-35 -50 70 100">
+          <path d="M 0,-42 L 0,40"/>
+        </svg>
+        <span class="glabel">i</span>
+      </div>
+
+      <!-- g -->
+      <div class="gcell g-orange">
+        <svg viewBox="-35 -50 70 100">
+          <path d="M 10,10 C 10,22 0,30 -10,22 L -10,10 C -10,-2 2,-8 10,-2 L 10,-18 C 10,-24 0,-26 -10,-18"/>
+        </svg>
+        <span class="glabel">g</span>
+      </div>
+
+      <!-- k -->
+      <div class="gcell g-orange">
+        <svg viewBox="-35 -50 70 100">
+          <path d="M -10,-40 L -10,40"/>
+          <path d="M -10,4 L 12,-28" class="d2"/>
+          <path d="M -10,4 L 12,40" class="d3"/>
+        </svg>
+        <span class="glabel">k</span>
+      </div>
+
+      <!-- e -->
+      <div class="gcell g-orange">
+        <svg viewBox="-35 -50 70 100">
+          <path d="M -16,-2 L 14,-2 C 14,-22 -16,-24 -16,-2 C -16,18 14,20 14,8"/>
+        </svg>
+        <span class="glabel">e</span>
+      </div>
+
+      <!-- y -->
+      <div class="gcell g-orange">
+        <svg viewBox="-35 -50 70 100">
+          <path d="M -10,-30 L 0,2"/>
+          <path d="M 10,-30 L 0,2 L -6,36" class="d2"/>
+        </svg>
+        <span class="glabel">y</span>
+      </div>
+
+      <!-- DigiKey wide -->
+      <div class="gcell gcell-wide g-orange">
+        <svg viewBox="-95 -45 190 90" style="width:78%;height:55%;">
+          <!-- D -->
+          <path d="M -82,-36 L -82,36"/>
+          <path d="M -82,-36 C -74,-42 -58,-42 -50,-24 L -50,24 C -58,42 -74,42 -82,36" class="d2"/>
+          <!-- i -->
+          <path d="M -34,-36 L -34,36" class="d2"/>
+          <!-- g -->
+          <path d="M -12,8 C -12,20 -20,26 -28,20 L -28,8 C -28,-4 -18,-8 -12,-2 L -12,-14 C -12,-20 -20,-22 -28,-14" class="d2"/>
+          <!-- i -->
+          <path d="M 4,-36 L 4,36" class="d2"/>
+          <!-- K -->
+          <path d="M 20,-36 L 20,36" class="d2"/>
+          <path d="M 20,0 L 42,-36" class="d2"/>
+          <path d="M 20,0 L 42,36" class="d3"/>
+          <!-- e -->
+          <path d="M 52,-2 L 76,-2 C 76,-22 52,-24 52,-2 C 52,18 76,20 76,8" class="d3"/>
+          <!-- y -->
+          <path d="M 84,-36 L 92,4" class="d3"/>
+          <path d="M 100,-36 L 92,4 L 88,36" class="d3"/>
+        </svg>
+        <span class="glabel" style="color:var(--orange);">DigiKey — 7-char sequence</span>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════ BOM ══════ -->
+<section id="bom">
+  <div class="inner">
+    <div class="reveal">
+      <p class="sec-label">04 / Hardware</p>
+      <h2>Bill of Materials</h2>
+    </div>
+    <div class="bom-cols reveal delay1">
+      <div>
+        <p class="bom-group-title" style="color:var(--cyan)">Drawing Device</p>
+        <div class="bom-row">
+          <span class="bom-part">M5Stack AtomS3R-CAM</span>
+          <span class="bom-note">ESP32-S3 · main controller + OV2640 camera</span>
+        </div>
+        <div class="bom-row">
+          <span class="bom-part">Micro servo × 2</span>
+          <span class="bom-note">G25 (servo 1) / G26 (servo 2)</span>
+        </div>
+        <div class="bom-row">
+          <span class="bom-part">WS2812B LED × 1</span>
+          <span class="bom-note">G0 · mounted at linkage coupler point</span>
+        </div>
+        <div class="bom-row">
+          <span class="bom-part">4-servo connection board <em style="color:var(--orange);font-style:normal;font-size:.8em">[self-made]</em></span>
+          <span class="bom-note">servo power routing, based on Switch Science PCB</span>
+          <a href="https://ssci.to/11122" class="bom-link" target="_blank">→ Switch Science ssci.to/11122</a>
+        </div>
+        <div class="bom-row">
+          <span class="bom-part">5-bar linkage frame</span>
+          <span class="bom-note">custom fabricated · all links 60 mm, D = 36 mm</span>
+        </div>
+      </div>
+      <div>
+        <p class="bom-group-title" style="color:var(--magenta)">Display Device</p>
+        <div class="bom-row">
+          <span class="bom-part">M5Stack AtomS3R</span>
+          <span class="bom-note">ESP32-S3 · controller + built-in 128×128 LCD</span>
+        </div>
+        <div class="bom-row">
+          <span class="bom-part">Mini controller <em style="color:var(--orange);font-style:normal;font-size:.8em">[self-made]</em></span>
+          <span class="bom-note">joystick (G8/G7) + 3 buttons, handheld form</span>
+          <a href="https://ssci.to/9520" class="bom-link" target="_blank">→ Switch Science ssci.to/9520</a>
+        </div>
+        <div class="bom-row" style="border-bottom:none">
+          <p class="bom-note" style="line-height:1.8;margin-top:.5rem">
+            Build with PlatformIO:<br>
+            <code style="color:var(--cyan)">pio run -e Drawing --target upload</code><br>
+            <code style="color:var(--magenta)">pio run -e Display --target upload</code>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════ FOOTER ═══ -->
+<footer>
+  <div class="footer-inner">
+    <div>
+      <p class="footer-brand-name">LumiGraph</p>
+      <p class="footer-desc">5-bar linkage LED light-drawing machine.<br>DigiKey Make ONE 2026 entry by sin1's studio.</p>
+    </div>
+    <div class="footer-links">
+      <a href="https://sin1.studio/" target="_blank">sin1's studio</a>
+      <a href="https://protopedia.net/prototype/8594" target="_blank">ProtoPedia</a>
+      <a href="https://github.com/sin1n24/LumiGlyphProtoPedia" target="_blank">Source Code (GitHub)</a>
+      <a href="https://ssci.to/11122" target="_blank">4-servo board — Switch Science</a>
+      <a href="https://ssci.to/9520" target="_blank">Mini controller — Switch Science</a>
+    </div>
+  </div>
+  <div class="footer-copy">
+    <span>© sin1's studio</span>
+    <span>MIT License</span>
+  </div>
+</footer>
+
+<!-- ═══════════════════════════════ SCRIPTS ══ -->
+<script>
+// ── HERO CANVAS: long-exposure 5-bar linkage simulation ─────────
+;(function(){
+  const cv = document.getElementById('hero-canvas');
+  const cx = cv.getContext('2d');
+  let W, H, ox, oy, sc;
+
+  function resize() {
+    W = cv.width  = window.innerWidth;
+    H = cv.height = window.innerHeight;
+    sc = Math.min(W, H) * 0.21;
+    ox = W * 0.5;
+    oy = H * 0.52;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  // 5-bar forward kinematics (normalized: L=1, D=0.6)
+  const L = 1, D = 0.6;
+  function fk(t1, t2) {
+    const ax = Math.cos(t1), ay = Math.sin(t1);
+    const bx = D + Math.cos(t2), by = Math.sin(t2);
+    const dx = bx-ax, dy = by-ay;
+    const d  = Math.sqrt(dx*dx+dy*dy);
+    if (d > 2||d < 1e-5) return null;
+    const h  = Math.sqrt(Math.max(0,1-d*d/4));
+    const mx = (ax+bx)/2, my = (ay+by)/2;
+    return { x: mx-h*dy/d-D/2, y: my+h*dx/d };
+  }
+
+  // Three independent traces with different parametric frequencies
+  const TRACES = [
+    { f1:.29,f2:.43,p1:0,   p2:1.3, a1:.62,a2:.55, hue:185 },
+    { f1:.17,f2:.37,p1:2.1, p2:.5,  a1:.5, a2:.58, hue:300 },
+    { f1:.41,f2:.23,p1:1.0, p2:2.8, a1:.48,a2:.52, hue: 30 },
+  ];
+  const BASE1 = Math.PI*0.42, BASE2 = Math.PI*0.75;
+  const TRAIL = 200;
+  const pts = TRACES.map(()=>[]);
+
+  function frame(now) {
+    const t = now * 2.8e-4;
+    cx.fillStyle = 'rgba(3,3,7,0.022)';
+    cx.fillRect(0,0,W,H);
+
+    TRACES.forEach((tr,ti)=>{
+      const t1 = BASE1 + tr.a1*Math.sin(tr.f1*t+tr.p1) + .14*Math.sin(tr.f1*2.1*t);
+      const t2 = BASE2 + tr.a2*Math.cos(tr.f2*t+tr.p2) + .14*Math.cos(tr.f2*1.8*t);
+      const r = fk(t1,t2); if(!r) return;
+      const sx = ox+r.x*sc, sy = oy-r.y*sc;
+      const p = pts[ti];
+      p.push({x:sx,y:sy});
+      if(p.length>TRAIL) p.shift();
+
+      // Trail
+      for(let i=1;i<p.length;i++){
+        const a=(i/p.length)*.72;
+        cx.beginPath();
+        cx.moveTo(p[i-1].x,p[i-1].y);
+        cx.lineTo(p[i].x,p[i].y);
+        cx.strokeStyle=`hsla(${tr.hue},100%,68%,${a})`;
+        cx.lineWidth=.8+(i/p.length)*1.4;
+        cx.stroke();
+      }
+      // LED glow
+      if(p.length){
+        const q=p[p.length-1];
+        const g=cx.createRadialGradient(q.x,q.y,0,q.x,q.y,14);
+        g.addColorStop(0,`hsla(${tr.hue},100%,92%,.85)`);
+        g.addColorStop(.35,`hsla(${tr.hue},100%,65%,.35)`);
+        g.addColorStop(1,'transparent');
+        cx.fillStyle=g; cx.beginPath(); cx.arc(q.x,q.y,14,0,Math.PI*2); cx.fill();
+        cx.fillStyle=`hsl(${tr.hue},10%,98%)`; cx.beginPath(); cx.arc(q.x,q.y,1.8,0,Math.PI*2); cx.fill();
+      }
+    });
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
+
+// ── SVG LINKAGE ANIMATION ────────────────────────────────────────
+;(function(){
+  const a1=document.getElementById('lk-a1'),a2=document.getElementById('lk-a2');
+  const a3=document.getElementById('lk-a3'),a4=document.getElementById('lk-a4');
+  const led=document.getElementById('lk-led'),glow=document.getElementById('lk-glow');
+  const core=document.getElementById('lk-core');
+  const j1=document.getElementById('lk-j1'),j2=document.getElementById('lk-j2');
+  const trail=document.getElementById('lk-trail');
+
+  const SC=42, OX=0, OY=120, D=0.6;
+  const P1={x:-18,y:OY}, P2={x:18,y:OY};
+  let tr=[];
+
+  function fk(t1,t2){
+    const ax=Math.cos(t1),ay=Math.sin(t1);
+    const bx=D+Math.cos(t2),by=Math.sin(t2);
+    const dx=bx-ax,dy=by-ay,d=Math.sqrt(dx*dx+dy*dy);
+    if(d>2||d<1e-5) return null;
+    const h=Math.sqrt(Math.max(0,1-d*d/4));
+    const mx=(ax+bx)/2,my=(ay+by)/2;
+    return{x:mx-h*dy/d,y:my+h*dx/d,ax,ay,bx,by};
+  }
+
+  function toS(x,y){return{x:OX+(x-D/2)*SC,y:OY-y*SC};}
+  function setLine(el,x1,y1,x2,y2){
+    el.setAttribute('x1',x1);el.setAttribute('y1',y1);
+    el.setAttribute('x2',x2);el.setAttribute('y2',y2);
+  }
+  function setCxy(el,x,y){el.setAttribute('cx',x);el.setAttribute('cy',y);}
+
+  function step(now){
+    const t=now*2.6e-4;
+    const t1=Math.PI*.42+.58*Math.sin(.3*t)+.14*Math.sin(.68*t);
+    const t2=Math.PI*.75+.52*Math.cos(.44*t)+.14*Math.cos(.86*t);
+    const r=fk(t1,t2);
+    if(!r){requestAnimationFrame(step);return;}
+    const A=toS(r.ax,r.ay),B=toS(r.bx,r.by),C=toS(r.x,r.y);
+    setLine(a1,P1.x,P1.y,A.x,A.y); setLine(a2,P2.x,P2.y,B.x,B.y);
+    setLine(a3,A.x,A.y,C.x,C.y);   setLine(a4,B.x,B.y,C.x,C.y);
+    setCxy(led,C.x,C.y); setCxy(glow,C.x,C.y); setCxy(core,C.x,C.y);
+    setCxy(j1,A.x,A.y);  setCxy(j2,B.x,B.y);
+    tr.push(C.x+','+C.y);
+    if(tr.length>90) tr.shift();
+    trail.setAttribute('points',tr.join(' '));
+    requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+})();
+
+// ── NAV SCROLL ───────────────────────────────────────────────────
+window.addEventListener('scroll',()=>{
+  document.getElementById('nav').classList.toggle('scrolled',scrollY>50);
+},{passive:true});
+
+// ── GLYPH HOVER (stroke-dashoffset) ─────────────────────────────
+document.querySelectorAll('.gcell path').forEach(p=>{
+  const len = p.getTotalLength ? p.getTotalLength() : 320;
+  p.style.strokeDasharray = len;
+  p.style.strokeDashoffset = len;
+});
+document.querySelectorAll('.gcell').forEach(cell=>{
+  cell.addEventListener('mouseenter',()=>{
+    cell.querySelectorAll('path').forEach((p,i)=>{
+      const delay = p.classList.contains('d3') ? .6
+                  : p.classList.contains('d2') ? .3 : 0;
+      p.style.transition = `stroke-dashoffset .9s ease ${delay}s`;
+      p.style.strokeDashoffset = 0;
+    });
+  });
+  cell.addEventListener('mouseleave',()=>{
+    cell.querySelectorAll('path').forEach(p=>{
+      p.style.transition = 'stroke-dashoffset .35s ease';
+      p.style.strokeDashoffset = p.style.strokeDasharray;
+    });
+  });
+});
+
+// ── INTERSECTION OBSERVER ────────────────────────────────────────
+const obs = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('vis'); obs.unobserve(e.target); } });
+},{threshold:.1});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+</script>
+</body>
+</html>

@@ -1529,8 +1529,8 @@ void drawGlyph(const GlyphDef& g) {
             if (i+1 >= g.len) break;
             int8_t gx = (int8_t)pgm_read_byte(&g.data[i++]);
             int8_t gy = (int8_t)pgm_read_byte(&g.data[i++]);
-            float wx = GLYPH_CX + gx * DRAW_SCALE;
-            float wy = GLYPH_CY + gy * DRAW_SCALE;
+            float wx = GLYPH_CX + gx * GLYPH_SCALE;
+            float wy = GLYPH_CY + gy * GLYPH_SCALE;
             drawLine(px, py, wx, wy, false, INTERP_STEPS, PENUP_STEP_MS);
             px = wx; py = wy;
         } else {

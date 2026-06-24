@@ -4,6 +4,7 @@
 
 A two-device system that traces glyph strokes using a WS2812B LED mounted at the coupler point of a 5-bar linkage mechanism, captured in long-exposure photography.
 
+- **Movie (Youtube)**: https://youtu.be/CDKWRTzFumU
 - **Source code (GitHub)**: https://github.com/sin1n24/LumiGlyphProtoPedia
 - **Project page (ProtoPedia)**: https://protopedia.net/prototype/8594
 - **Author**: sin1's studio — https://sin1.studio/
